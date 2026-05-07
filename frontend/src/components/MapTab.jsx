@@ -113,7 +113,7 @@ const MapTab = () => {
     setResult(null);
 
     try {
-      const response = await axios.post('http://localhost:8000/predict/map', {
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/predict/map`, {
         province,
         season,
         date,
