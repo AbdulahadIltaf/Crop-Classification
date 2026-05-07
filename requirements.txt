@@ -1,8 +1,10 @@
-earthengine_api==1.6.0
+fastapi==0.110.0
+uvicorn==0.27.1
+python-multipart==0.0.9
+python-dotenv==1.0.1
+earthengine-api==1.6.0
 scikit-learn==1.6.1
 ee==0.2
-folium==0.20.0
-gradio==5.39.0
 joblib==1.4.2
 matplotlib==3.8.4
 numpy==2.2.6
