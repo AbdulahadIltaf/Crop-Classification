@@ -39,7 +39,7 @@ const InstanceTab = () => {
     setResult(null);
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/predict/instance`, formData);
+      const response = await axios.post('/predict/instance', formData);
       setResult(response.data);
     } catch (err) {
       setError(err.response?.data?.detail || "An error occurred during prediction.");

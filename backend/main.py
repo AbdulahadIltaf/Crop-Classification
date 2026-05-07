@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env"))
 
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
@@ -617,6 +619,27 @@ async def predict_instance(req: InstancePredictionRequest):
     }
     crop = predict_crop_description({"latitude": req.latitude, "longitude": req.longitude}, static_features, scaler, feature_columns, req.province, req.season)
     return {"crop": crop}
+
+# ── Serve React frontend (production build) ───────────────────────────────────
+# When running locally the frontend dev server handles its own traffic,
+# so this block only activates when frontend/dist actually exists (i.e. on Render).
+FRONTEND_DIST = os.path.join(BASE_DIR, "frontend", "dist")
+
+if os.path.isdir(FRONTEND_DIST):
+    # Serve Vite's hashed asset bundles (JS / CSS / images)
+    _assets = os.path.join(FRONTEND_DIST, "assets")
+    if os.path.isdir(_assets):
+        app.mount("/assets", StaticFiles(directory=_assets), name="static-assets")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def serve_spa(full_path: str):
+        """Catch-all: serve the file if it exists, otherwise return index.html
+        so React Router handles client-side navigation."""
+        requested = os.path.join(FRONTEND_DIST, full_path)
+        if full_path and os.path.isfile(requested):
+            return FileResponse(requested)
+        return FileResponse(os.path.join(FRONTEND_DIST, "index.html"))
+
 
 if __name__ == "__main__":
     import uvicorn

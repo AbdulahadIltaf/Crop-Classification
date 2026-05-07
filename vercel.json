@@ -1,8 +1,4 @@
 {
-  "version": 2,
-  "buildCommand": "cd frontend && npm install && npm run build",
-  "outputDirectory": "frontend/dist",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "_comment": "Not used — project is fully deployed on Render (render.yaml). Keep this file if you later want to split frontend to Vercel."
 }

@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: crop-classification
+    runtime: python
+    # Build: install Python deps + build React frontend
+    buildCommand: >
+      pip install -r backend/requirements.txt &&
+      cd frontend && npm install && npm run build
+    # Start: run FastAPI from project root (it serves the built frontend too)
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    # Render free tier — upgrade if you need more resources
+    plan: free
+    envVars:
+      # ── GEE Service Account ──────────────────────────────────────
+      - key: GEE_SERVICE_ACCOUNT
+        sync: false
+      - key: GEE_PROJECT_ID
+        sync: false
+      - key: GEE_PRIVATE_KEY_ID
+        sync: false
+      - key: GEE_PRIVATE_KEY
+        sync: false
+      - key: GEE_CLIENT_EMAIL
+        sync: false
+      - key: GEE_CLIENT_ID
+        sync: false
+      - key: GEE_AUTH_URI
+        sync: false
+      - key: GEE_TOKEN_URI
+        sync: false
+      - key: GEE_AUTH_PROVIDER_X509_CERT_URL
+        sync: false
+      - key: GEE_CLIENT_X509_CERT_URL
+        sync: false
+      # ── GEE OAuth ────────────────────────────────────────────────
+      - key: GEE_OAUTH_CLIENT_ID
+        sync: false
+      - key: GEE_OAUTH_CLIENT_SECRET
+        sync: false
+      - key: GEE_OAUTH_REFRESH_TOKEN
+        sync: false
+      - key: GEE_OAUTH_PROJECT
+        sync: false

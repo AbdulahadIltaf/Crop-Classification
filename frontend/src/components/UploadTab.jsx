@@ -43,7 +43,7 @@ const UploadTab = () => {
     formData.append('date', date);
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/predict/upload`, formData, {
+      const response = await axios.post('/predict/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setResult(response.data);
