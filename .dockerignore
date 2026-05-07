@@ -1,0 +1,11 @@
+frontend/node_modules
+frontend/dist
+backend/__pycache__
+backend/.venv
+.env
+.git
+.vscode
+*.pkl
+*.pth
+# Do not ignore models if you want them inside the container, 
+# but usually they are uploaded with the code.
