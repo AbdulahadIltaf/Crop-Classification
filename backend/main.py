@@ -621,11 +621,11 @@ async def predict_instance(req: InstancePredictionRequest):
     return {"crop": crop}
 
 # ── Serve React frontend (production build) ───────────────────────────────────
-# When running locally the frontend dev server handles its own traffic,
-# so this block only activates when frontend/dist actually exists (i.e. on Render).
 FRONTEND_DIST = os.path.join(BASE_DIR, "frontend", "dist")
 
+print(f"🔍 Checking for frontend at: {FRONTEND_DIST}")
 if os.path.isdir(FRONTEND_DIST):
+    print("✅ Frontend found! Serving static files.")
     # Serve Vite's hashed asset bundles (JS / CSS / images)
     _assets = os.path.join(FRONTEND_DIST, "assets")
     if os.path.isdir(_assets):
@@ -633,12 +633,12 @@ if os.path.isdir(FRONTEND_DIST):
 
     @app.get("/{full_path:path}", include_in_schema=False)
     async def serve_spa(full_path: str):
-        """Catch-all: serve the file if it exists, otherwise return index.html
-        so React Router handles client-side navigation."""
         requested = os.path.join(FRONTEND_DIST, full_path)
         if full_path and os.path.isfile(requested):
             return FileResponse(requested)
         return FileResponse(os.path.join(FRONTEND_DIST, "index.html"))
+else:
+    print("⚠️ Frontend NOT found. API only mode.")
 
 
 if __name__ == "__main__":
