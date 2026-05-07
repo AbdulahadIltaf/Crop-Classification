@@ -1,0 +1,354 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import 'leaflet/dist/leaflet.css';
+
+:root {
+  --bg-dark: #111827;
+  --bg-tech-grey: #1f2937;
+  --panel-bg: rgba(31, 41, 55, 0.85);
+  --border-color: rgba(255, 255, 255, 0.08);
+  
+  --text-main: #f9fafb;
+  --text-muted: #9ca3af;
+  
+  --agri-dark: #166534;  /* Dark Green */
+  --agri-light: #22c55e; /* Light Green */
+  --agri-bright: #10b981; /* Emerald */
+  --accent-red: #ef4444; /* Bright Red/Fruits */
+  --accent-yellow: #eab308; /* Sunshine/Wheat */
+  
+  --surface-blur: blur(16px);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Diamond Texture Background for App Pages */
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  min-height: 100vh;
+  /* Subtle diamond texture overlay on top of the image */
+  background-image: 
+    linear-gradient(135deg, rgba(255,255,255,0.015) 25%, transparent 25%),
+    linear-gradient(225deg, rgba(255,255,255,0.015) 25%, transparent 25%),
+    linear-gradient(315deg, rgba(255,255,255,0.015) 25%, transparent 25%),
+    linear-gradient(45deg, rgba(255,255,255,0.015) 25%, transparent 25%),
+    linear-gradient(to bottom, rgba(17, 24, 39, 0.3), rgba(17, 24, 39, 0.6)),
+    url('/images/yulian-alexeyev-xDLEUTWCZdc-unsplash.jpg');
+  background-size: 40px 40px, 40px 40px, 40px 40px, 40px 40px, cover, cover;
+  background-position: -20px 0, -20px 0, 0 0, 0 0, center, center;
+  background-attachment: fixed;
+  background-blend-mode: soft-light, soft-light, soft-light, soft-light, multiply, normal;
+}
+
+/* Landing Page Hero Background */
+.landing-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: 
+    linear-gradient(to bottom, rgba(17, 24, 39, 0.7), rgba(17, 24, 39, 0.95)),
+    url('/images/marcel-l-4xA6jsNo8FM-unsplash.jpg');
+  background-size: cover;
+  background-position: center;
+  z-index: -1;
+  animation: subtleZoom 20s infinite alternate ease-in-out;
+}
+
+@keyframes subtleZoom {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.05); }
+}
+
+/* Glassmorphism Panel */
+.glass-panel {
+  background: var(--panel-bg);
+  backdrop-filter: var(--surface-blur);
+  -webkit-backdrop-filter: var(--surface-blur);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  border-radius: 100px;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  background: linear-gradient(to right, var(--agri-light), var(--agri-bright));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+}
+
+.back-btn {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 0.5rem 1rem;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+}
+.back-btn:hover {
+  background: rgba(255,255,255,0.1);
+  transform: translateX(-5px);
+}
+
+/* Landing Page Cards */
+.landing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-top: 4rem;
+}
+
+.feature-card {
+  background: rgba(31, 41, 55, 0.6);
+  backdrop-filter: var(--surface-blur);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 24px;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.5rem;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), transparent);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.feature-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  border-color: var(--agri-light);
+  box-shadow: 0 20px 40px rgba(22, 101, 52, 0.3);
+}
+
+.feature-card:hover::before {
+  opacity: 1;
+}
+
+.feature-icon-wrapper {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--bg-tech-grey), var(--bg-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--agri-dark);
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+  z-index: 1;
+}
+
+.feature-card h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  z-index: 1;
+}
+
+.feature-card p {
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1.5;
+  z-index: 1;
+}
+
+.content-area {
+  padding: 3rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Sleek Forms - Less "Form Filling" Look */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 0.875rem;
+  color: var(--agri-light);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.input-field {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--bg-tech-grey);
+  color: var(--text-main);
+  padding: 0.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border-radius: 0;
+}
+
+.input-field:focus {
+  outline: none;
+  border-bottom-color: var(--agri-bright);
+  background: linear-gradient(to top, rgba(34, 197, 94, 0.05), transparent);
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5rem;
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, var(--agri-dark), var(--agri-bright));
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  box-shadow: 0 4px 15px rgba(22, 101, 52, 0.4);
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.5);
+}
+
+.btn-primary:disabled {
+  background: var(--bg-tech-grey);
+  color: var(--text-muted);
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Upload Area */
+.upload-zone {
+  border: 2px dashed var(--bg-tech-grey);
+  border-radius: 20px;
+  padding: 4rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(31, 41, 55, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.upload-zone:hover {
+  border-color: var(--agri-light);
+  background: rgba(34, 197, 94, 0.05);
+}
+
+/* Leaflet Map Overrides */
+.leaflet-container {
+  border-radius: 16px;
+  z-index: 1;
+}
+
+/* Stats Card */
+.stat-card {
+  background: rgba(31, 41, 55, 0.8);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--agri-light);
+  padding: 1.25rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  transition: transform 0.3s;
+}
+
+.stat-card:hover {
+  transform: translateX(5px);
+  background: rgba(31, 41, 55, 1);
+}
+
+.stat-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.stat-details {
+  flex: 1;
+}
+
+.stat-name {
+  font-weight: 700;
+  font-size: 1.125rem;
+  margin-bottom: 0.25rem;
+}
+
+.stat-value {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
