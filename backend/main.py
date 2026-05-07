@@ -1,4 +1,12 @@
 import os
+import json
+import tempfile
+import concurrent.futures
+from dotenv import load_dotenv
+
+# Load .env from the project root (one level above backend/)
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env"))
+
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -20,9 +28,6 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 from PIL import Image
 from shapely.geometry import shape, Point
-import tempfile
-import json
-import concurrent.futures
 
 app = FastAPI(title="Crop Classification API")
 
@@ -36,14 +41,37 @@ app.add_middleware(
 
 # Configuration paths (assuming run from backend directory)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-KEY_PATH = os.path.join(BASE_DIR, "gee-service-key.json")
-SERVICE_ACCOUNT = "gee-service@artful-striker-466710-b3.iam.gserviceaccount.com"
 
-# Initialize Earth Engine
+# ── Earth Engine initialisation from .env ────────────────────────────────────
+def _build_gee_key_file() -> str:
+    """Write the service-account private key from env vars to a temp JSON file
+    and return its path.  The caller is responsible for deleting it when done."""
+    sa_info = {
+        "type": "service_account",
+        "project_id": os.environ["GEE_PROJECT_ID"],
+        "private_key_id": os.environ["GEE_PRIVATE_KEY_ID"],
+        "private_key": os.environ["GEE_PRIVATE_KEY"].replace("\\n", "\n"),
+        "client_email": os.environ["GEE_CLIENT_EMAIL"],
+        "client_id": os.environ["GEE_CLIENT_ID"],
+        "auth_uri": os.environ.get("GEE_AUTH_URI", "https://accounts.google.com/o/oauth2/auth"),
+        "token_uri": os.environ.get("GEE_TOKEN_URI", "https://oauth2.googleapis.com/token"),
+        "auth_provider_x509_cert_url": os.environ.get("GEE_AUTH_PROVIDER_X509_CERT_URL", "https://www.googleapis.com/oauth2/v1/certs"),
+        "client_x509_cert_url": os.environ["GEE_CLIENT_X509_CERT_URL"],
+        "universe_domain": "googleapis.com",
+    }
+    tmp = tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False)
+    json.dump(sa_info, tmp)
+    tmp.flush()
+    tmp.close()
+    return tmp.name
+
 try:
-    credentials = ee.ServiceAccountCredentials(SERVICE_ACCOUNT, KEY_PATH)
+    _key_file = _build_gee_key_file()
+    SERVICE_ACCOUNT = os.environ["GEE_SERVICE_ACCOUNT"]
+    credentials = ee.ServiceAccountCredentials(SERVICE_ACCOUNT, _key_file)
     ee.Initialize(credentials)
-    print("✅ Earth Engine initialized with service account.")
+    os.remove(_key_file)  # clean up temp key file immediately after init
+    print("✅ Earth Engine initialized from .env credentials.")
 except Exception as e:
     print(f"❌ Earth Engine initialization failed: {e}")
 
